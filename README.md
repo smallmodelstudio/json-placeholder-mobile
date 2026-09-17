@@ -10,12 +10,12 @@ component and end-to-end testing, and mobile CI/CD. It is decoupled from the API
 and talks to it only over HTTP.
 
 **Stack:** Expo SDK 57 · React Native 0.86 · Expo Router · TypeScript 6 · Zod ·
-Jest + React Native Testing Library
+TanStack Query · openapi-fetch · Jest + React Native Testing Library · MSW
 
 ## Status
 
-Phase 1 (theme and app shell) is done. See the [build plan](docs/README-plan.md)
-for what comes next.
+Phase 2 (API layer) is done. See the [build plan](docs/README-plan.md) for
+what comes next.
 
 ## Quick start
 
@@ -31,13 +31,14 @@ emulator.
 
 ## Repository map
 
-| Path                                               | Contents                                                    | Docs                                              |
-| -------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------- |
-| `package.json`, `.env`, `app.json`                 | Scripts, configuration, Expo app config                     | [Getting started](docs/README-getting-started.md) |
-| `src/app/`                                         | Expo Router routes and layouts only                         | [Build plan](docs/README-plan.md)                 |
-| `src/features/`                                    | Screens and feature code                                    | [Build plan](docs/README-plan.md)                 |
-| `src/theme/`                                       | Paper theme (light, dark), fonts, theme mode override       | [UI](docs/README-ui.md)                           |
-| `src/ui/`                                          | Shared components: Screen, EmptyState, ErrorState, Skeleton | [UI](docs/README-ui.md)                           |
-| `src/config/`                                      | Environment parsing and validation                          | [Getting started](docs/README-getting-started.md) |
-| `src/test/`                                        | Jest setup and test helpers                                 | [Testing](docs/README-testing.md)                 |
-| `eslint.config.js`, `.prettierrc`, `tsconfig.json` | Lint, format and compiler rules                             | [Code quality](docs/README-code-quality.md)       |
+| Path                                               | Contents                                                    | Docs                                                         |
+| -------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------ |
+| `package.json`, `.env`, `app.json`                 | Scripts, configuration, Expo app config                     | [Getting started](docs/README-getting-started.md)            |
+| `src/app/`                                         | Expo Router routes and layouts only                         | [Build plan](docs/README-plan.md)                            |
+| `src/features/`                                    | Screens and feature code                                    | [Build plan](docs/README-plan.md)                            |
+| `src/theme/`                                       | Paper theme (light, dark), fonts, theme mode override       | [UI](docs/README-ui.md)                                      |
+| `src/ui/`                                          | Shared components: Screen, EmptyState, ErrorState, Skeleton | [UI](docs/README-ui.md)                                      |
+| `src/api/`, `openapi/`                             | API client, ApiError, generated contract types, query keys  | [API](docs/README-api.md)                                    |
+| `src/config/`                                      | Environment parsing and validation                          | [Getting started](docs/README-getting-started.md)            |
+| `src/test/`                                        | Jest setup and test helpers, MSW mocks                      | [Testing](docs/README-testing.md), [API](docs/README-api.md) |
+| `eslint.config.js`, `.prettierrc`, `tsconfig.json` | Lint, format and compiler rules                             | [Code quality](docs/README-code-quality.md)                  |

@@ -28,3 +28,6 @@ Node without a device.
   `render`, so `await` it.
 - **Query like a user.** Prefer `getByText`, `getByRole` and `getByLabelText`
   over `getByTestId`, and assert with `toBeOnTheScreen()`.
+- **Network calls are mocked with MSW**, not with `jest.mock` on `@/api`. See
+  [API](docs/README-api.md) for the handlers, fixtures and the environment
+  quirks (Expo's fetch, `expo-crypto`) their setup works around.

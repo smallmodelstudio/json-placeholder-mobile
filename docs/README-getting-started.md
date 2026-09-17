@@ -65,8 +65,9 @@ machine. On WSL2 there is a second hop between Windows and Linux. Use one of:
 | WSL mirrored networking     | Set `networkingMode=mirrored` in `%UserProfile%\.wslconfig`, then `wsl --shutdown`                                |
 | A deployed API              | Set `EXPO_PUBLIC_API_URL` in `.env.local`                                                                         |
 
-On the web target, `localhost` works as-is. The API doesn't enable CORS yet, so
-browser requests to it will fail once the app starts fetching (Phase 2).
+On the web target, `localhost` works as-is, but the API doesn't enable CORS,
+so browser requests to it fail outright. Data-fetching features target
+Android only for that reason — see [API](docs/README-api.md#web-and-cors).
 
 ## npm scripts
 

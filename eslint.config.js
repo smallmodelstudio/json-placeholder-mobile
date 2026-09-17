@@ -5,7 +5,13 @@ const tseslint = require('typescript-eslint');
 
 module.exports = defineConfig([
   {
-    ignores: ['dist/*', 'coverage/*', '.expo/*', 'expo-env.d.ts'],
+    ignores: [
+      'dist/*',
+      'coverage/*',
+      '.expo/*',
+      'expo-env.d.ts',
+      'src/api/schema.d.ts',
+    ],
   },
   expoConfig,
   {

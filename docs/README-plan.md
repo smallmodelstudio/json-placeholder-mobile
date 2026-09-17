@@ -159,16 +159,16 @@ Learn: theming, safe areas, accessibility basics (roles, labels, font scaling).
 
 ### Phase 2: API layer
 
-- [ ] `openapi/proxy.json` snapshot, `api:sync` and `api:generate` scripts
-- [ ] `apiClient` on `openapi-fetch`: base URL, correlation ID header, envelope unwrap
-- [ ] `ApiError` and response parsing, with unit tests
-- [ ] QueryClient config: retry policy, stale times, refetch on focus
-- [ ] Query key factory
-- [ ] MSW handlers and fixtures; test render helper with all providers
-- [ ] `docs/README-api.md`
-- [ ] Decide on the web target: the API doesn't enable CORS, so browser requests
-      fail. Either keep web out of API testing (Android only), or ask for CORS on
-      the API as a separate change there
+- [x] `openapi/proxy.json` snapshot, `api:sync` and `api:generate` scripts
+- [x] `apiClient` on `openapi-fetch`: base URL, correlation ID header, envelope unwrap
+- [x] `ApiError` and response parsing, with unit tests
+- [x] QueryClient config: retry policy, stale times, refetch on focus
+- [x] Query key factory
+- [x] MSW handlers and fixtures; test render helper with all providers
+- [x] `docs/README-api.md`
+- [x] Decide on the web target: the API doesn't enable CORS, so browser requests
+      fail. Decided to keep web out of API testing (Android only) rather than
+      change the API repo, which this app doesn't depend on
 
 Learn: type-safe boundaries, error modelling, caching strategy.
 
