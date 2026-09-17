@@ -1,0 +1,4 @@
+coverage/
+.expo/
+dist/
+package-lock.json
