@@ -149,11 +149,11 @@ Learn: the Expo toolchain, dev builds compared with Expo Go.
 
 ### Phase 1: Theme and app shell
 
-- [ ] React Native Paper provider with Material 3 light and dark themes, following the system setting
-- [ ] Custom font through `expo-font`
-- [ ] Tab navigation with icons; Settings screen with a theme override
-- [ ] Shared `Screen`, `ErrorState`, `EmptyState`, `Skeleton` components
-- [ ] `docs/README-ui.md`
+- [x] React Native Paper provider with Material 3 light and dark themes, following the system setting
+- [x] Custom font through `expo-font`
+- [x] Tab navigation with icons; Settings screen with a theme override
+- [x] Shared `Screen`, `ErrorState`, `EmptyState`, `Skeleton` components
+- [x] `docs/README-ui.md`
 
 Learn: theming, safe areas, accessibility basics (roles, labels, font scaling).
 

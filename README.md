@@ -14,8 +14,8 @@ Jest + React Native Testing Library
 
 ## Status
 
-Phase 0 (scaffold) is done. See the [build plan](docs/README-plan.md) for what
-comes next.
+Phase 1 (theme and app shell) is done. See the [build plan](docs/README-plan.md)
+for what comes next.
 
 ## Quick start
 
@@ -31,11 +31,13 @@ emulator.
 
 ## Repository map
 
-| Path                                               | Contents                                | Docs                                              |
-| -------------------------------------------------- | --------------------------------------- | ------------------------------------------------- |
-| `package.json`, `.env`, `app.json`                 | Scripts, configuration, Expo app config | [Getting started](docs/README-getting-started.md) |
-| `src/app/`                                         | Expo Router routes and layouts only     | [Build plan](docs/README-plan.md)                 |
-| `src/features/`                                    | Screens and feature code                | [Build plan](docs/README-plan.md)                 |
-| `src/config/`                                      | Environment parsing and validation      | [Getting started](docs/README-getting-started.md) |
-| `src/test/`                                        | Jest setup and test helpers             | [Testing](docs/README-testing.md)                 |
-| `eslint.config.js`, `.prettierrc`, `tsconfig.json` | Lint, format and compiler rules         | [Code quality](docs/README-code-quality.md)       |
+| Path                                               | Contents                                                    | Docs                                              |
+| -------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------- |
+| `package.json`, `.env`, `app.json`                 | Scripts, configuration, Expo app config                     | [Getting started](docs/README-getting-started.md) |
+| `src/app/`                                         | Expo Router routes and layouts only                         | [Build plan](docs/README-plan.md)                 |
+| `src/features/`                                    | Screens and feature code                                    | [Build plan](docs/README-plan.md)                 |
+| `src/theme/`                                       | Paper theme (light, dark), fonts, theme mode override       | [UI](docs/README-ui.md)                           |
+| `src/ui/`                                          | Shared components: Screen, EmptyState, ErrorState, Skeleton | [UI](docs/README-ui.md)                           |
+| `src/config/`                                      | Environment parsing and validation                          | [Getting started](docs/README-getting-started.md) |
+| `src/test/`                                        | Jest setup and test helpers                                 | [Testing](docs/README-testing.md)                 |
+| `eslint.config.js`, `.prettierrc`, `tsconfig.json` | Lint, format and compiler rules                             | [Code quality](docs/README-code-quality.md)       |
