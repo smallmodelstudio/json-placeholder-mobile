@@ -37,6 +37,7 @@ function ThemedApp() {
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="post/[id]" options={{ headerShown: true }} />
+          <Stack.Screen name="person/[id]" options={{ headerShown: true }} />
         </Stack>
       </NavigationThemeProvider>
     </PaperProvider>

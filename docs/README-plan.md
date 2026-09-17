@@ -183,9 +183,9 @@ Learn: this slice sets the pattern every later feature copies.
 
 ### Phase 4: People
 
-- [ ] Directory with debounced search
-- [ ] Profile with segmented Posts, Albums and Todos
-- [ ] Prefetch a profile when its row is pressed
+- [x] Directory with debounced search
+- [x] Profile with segmented Posts, Albums and Todos
+- [x] Prefetch a profile when its row is pressed
 
 Learn: reusing the pattern, nested routes, prefetching.
 

@@ -43,6 +43,8 @@ src/app/
     settings.tsx       Settings
   post/
     [id].tsx          Post detail, pushed on top of the tabs
+  person/
+    [id].tsx          Person profile, pushed on top of the tabs
 ```
 
 Each route file re-exports its screen from `src/features/<feature>/`, per the
@@ -51,10 +53,11 @@ routing rule in `docs/README-plan.md`. Tab icons come from
 look. `docs/README-architecture.md` covers how a dynamic route like
 `post/[id].tsx` stays this thin.
 
-People and Albums are placeholders (an `EmptyState` saying what's coming)
-until Phases 4 and 5 add their data. Posts and Settings are fully built: Posts
-lists posts from the API with a detail screen per `docs/README-architecture.md`;
-Settings shows the theme picker, the configured API URL and the app version.
+Albums is still a placeholder (an `EmptyState` saying what's coming) until
+Phase 5 adds its data. Posts, People and Settings are fully built: Posts lists
+posts from the API with a detail screen, and People a searchable directory
+with a profile screen, both per `docs/README-architecture.md`; Settings shows
+the theme picker, the configured API URL and the app version.
 
 ## Shared components (`src/ui/`)
 

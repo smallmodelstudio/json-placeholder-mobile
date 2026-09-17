@@ -1,7 +1,9 @@
 # Architecture
 
 The feature pattern Posts establishes in Phase 3, for People and Albums to
-copy in Phases 4 and 5.
+copy in Phases 4 and 5. People (Phase 4) copies it as-is for its directory and
+profile screens, and adds three patterns of its own: client-side search,
+prefetch-on-press and lazily-enabled segments, all covered below.
 
 ## A feature's files
 
@@ -55,6 +57,38 @@ blocking it:
 
 This is a judgement call per query, not a rule with one answer — the test is
 whether the screen is still useful without that data.
+
+## Lazily-enabled segments
+
+`PersonProfileScreen`'s Posts / Albums / Todos segmented view (`SegmentedButtons`)
+fetches only the selected segment's resource: `usePersonPosts`, `usePersonAlbums`
+and `usePersonTodos` each take an `enabled` flag set to `segment === '<name>'`,
+so switching segments fetches on demand rather than all three eagerly. Each
+segment still gets the full loading/error/empty/success treatment, the same
+exception `usePostComments` gets on the post detail screen — it's the point of
+the segment, not secondary data.
+
+## Prefetching
+
+`usePerson` (`src/features/people/use-person.ts`) exposes its query as
+`personQueryOptions(userId)`, a `queryOptions(...)` call, rather than only the
+hook. `PeopleScreen` calls `queryClient.prefetchQuery(personQueryOptions(id))`
+on row press, ahead of the navigation, so the profile query is often already
+resolved by the time `PersonProfileScreen` mounts and calls `usePerson` with
+the same options. `useQueryClient()` (not the `queryClient` singleton
+imported from `@/api`) is what a screen uses to do this — it resolves to
+whichever `QueryClient` is in context, so prefetching works the same way in
+tests as it does in the app.
+
+## Client-side search
+
+`PeopleScreen` filters the full people list in memory rather than sending a
+search param: the API contract rejects unknown query params on `/users`, and
+the directory is the same small, unpaginated shape as `/posts`. `useDebouncedValue`
+delays the filter by 250ms after the last keystroke, so it runs once per pause
+in typing instead of on every character — filtering itself is cheap at this
+size, but a search box should still feel like it isn't recomputing the whole
+list on every keystroke.
 
 ## Errors are typed
 
