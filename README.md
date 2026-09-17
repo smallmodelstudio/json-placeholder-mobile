@@ -14,8 +14,8 @@ TanStack Query · openapi-fetch · Jest + React Native Testing Library · MSW
 
 ## Status
 
-Phase 2 (API layer) is done. See the [build plan](docs/README-plan.md) for
-what comes next.
+Phase 3 (Posts) is done. See the [build plan](docs/README-plan.md) for what
+comes next.
 
 ## Quick start
 
@@ -35,7 +35,7 @@ emulator.
 | -------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------ |
 | `package.json`, `.env`, `app.json`                 | Scripts, configuration, Expo app config                     | [Getting started](docs/README-getting-started.md)            |
 | `src/app/`                                         | Expo Router routes and layouts only                         | [Build plan](docs/README-plan.md)                            |
-| `src/features/`                                    | Screens and feature code                                    | [Build plan](docs/README-plan.md)                            |
+| `src/features/`                                    | Screens and feature code                                    | [Architecture](docs/README-architecture.md)                  |
 | `src/theme/`                                       | Paper theme (light, dark), fonts, theme mode override       | [UI](docs/README-ui.md)                                      |
 | `src/ui/`                                          | Shared components: Screen, EmptyState, ErrorState, Skeleton | [UI](docs/README-ui.md)                                      |
 | `src/api/`, `openapi/`                             | API client, ApiError, generated contract types, query keys  | [API](docs/README-api.md)                                    |

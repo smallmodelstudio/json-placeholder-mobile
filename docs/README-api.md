@@ -67,6 +67,10 @@ was wrong and won't succeed on a later attempt.
 Error states in the UI show `error.correlationId` as "Ref: …" so a failure can
 be traced in the API's own logs.
 
+`src/types/react-query.d.ts` registers `ApiError` as TanStack Query's default
+error type, so every `useQuery().error` is one — no cast needed to reach
+`.message` or `.correlationId`.
+
 ### `queryClient`
 
 Configured per the contract:
@@ -109,8 +113,8 @@ doesn't sit through the retry backoff.
 
 ### Why the test setup looks like this
 
-Three environment quirks, each worth knowing before touching
-`src/test/setup-*.ts` or `package.json`'s `jest` config:
+Environment quirks worth knowing before touching `src/test/setup-*.ts` or
+`package.json`'s `jest` config:
 
 - **`expo-crypto` doesn't work under Jest.** Its `randomUUID()` is a native
   module with no Jest mock, and resolves to `undefined`. `__mocks__/expo-crypto.ts`
@@ -139,6 +143,19 @@ Three environment quirks, each worth knowing before touching
   few of MSW's transitive dependencies (`rettime`, `@open-draft/deferred-promise`,
   `until-async`) that ship ESM-only, and a `.mjs` transform rule, since
   Jest doesn't transform node_modules or `.mjs` files by default.
+- **TanStack Query batches notifications with `setTimeout(fn, 0)`** by
+  default, which fires after React Native Testing Library's `act()` scope has
+  already closed and logs a spurious "not wrapped in act" warning for every
+  query-backed test. `setup-msw.ts` calls
+  `notifyManager.setScheduler(queueMicrotask)` so a query's update lands
+  inside the same `act` batch as the `await` that triggered it.
+- **`FlashList` needs its layout measurements mocked.** It measures real
+  layout natively, which Jest can't provide, so a `FlashList` renders no rows
+  without help. `src/test/setup-flash-list.ts` mocks the three measurement
+  functions the installed version actually exports; the mock the package
+  ships in its own `jestSetup.js` instead aliases `FlashList` to an internal
+  `RecyclerView` export that doesn't exist in this version, so using it
+  renders `undefined` in place of the list.
 
 ## Web and CORS
 

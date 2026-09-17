@@ -31,7 +31,8 @@
     ],
     "setupFilesAfterEnv": [
       "<rootDir>/src/test/setup-fetch-polyfill.ts",
-      "<rootDir>/src/test/setup-msw.ts"
+      "<rootDir>/src/test/setup-msw.ts",
+      "<rootDir>/src/test/setup-flash-list.ts"
     ],
     "transformIgnorePatterns": [
       "/node_modules/(?!(.pnpm|react-native|@react-native|@react-native-community|expo|@expo|@expo-google-fonts|react-navigation|@react-navigation|@sentry/react-native|native-base|standard-navigation|rettime|@open-draft/deferred-promise|until-async))",
@@ -52,6 +53,7 @@
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
     "@expo/vector-icons": "^15.0.2",
+    "@shopify/flash-list": "2.0.2",
     "@tanstack/react-query": "^5.103.1",
     "expo": "~57.0.23",
     "expo-constants": "~57.0.18",

@@ -7,7 +7,16 @@
 // patches global fetch before the test file's own imports run. `apiClient`
 // (src/api/client.ts) captures `globalThis.fetch` once, when the module
 // loads; patching any later would leave it holding the unpatched fetch.
+import { notifyManager } from '@tanstack/react-query';
+
 import { server } from './msw/server';
+
+// TanStack Query batches query-state updates with `setTimeout(fn, 0)` by
+// default, which fires outside React Native Testing Library's `act()` scope
+// and logs a spurious "not wrapped in act" warning for every query-backed
+// screen test. Scheduling with a microtask instead keeps the update inside
+// the same act batch as the `await` that triggered it.
+notifyManager.setScheduler(queueMicrotask);
 
 server.listen({ onUnhandledRequest: 'error' });
 

@@ -5,7 +5,7 @@ import { Button, Text, useTheme } from 'react-native-paper';
 interface ErrorStateProps {
   readonly title?: string;
   readonly message: string;
-  readonly correlationId?: string;
+  readonly correlationId?: string | undefined;
   readonly onRetry?: () => void;
 }
 

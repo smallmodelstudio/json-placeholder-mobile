@@ -34,23 +34,27 @@ keeping the splash screen up until they're ready, then wraps the app in
 
 ```text
 src/app/
-  _layout.tsx        Stack: providers, one route group
+  _layout.tsx        Stack: providers, the tabs group, and the post detail route
   (tabs)/
     _layout.tsx       Tabs: icons and titles for each screen
     index.tsx         Posts
     people.tsx        People
     albums.tsx        Albums
     settings.tsx       Settings
+  post/
+    [id].tsx          Post detail, pushed on top of the tabs
 ```
 
 Each route file re-exports its screen from `src/features/<feature>/`, per the
 routing rule in `docs/README-plan.md`. Tab icons come from
 `@expo/vector-icons`'s `MaterialCommunityIcons`, matching Paper's Material
-look.
+look. `docs/README-architecture.md` covers how a dynamic route like
+`post/[id].tsx` stays this thin.
 
-Posts, People and Albums are placeholders (an `EmptyState` saying what's
-coming) until Phases 3–5 add their data. Settings is fully built: it shows the
-theme picker, the configured API URL and the app version.
+People and Albums are placeholders (an `EmptyState` saying what's coming)
+until Phases 4 and 5 add their data. Posts and Settings are fully built: Posts
+lists posts from the API with a detail screen per `docs/README-architecture.md`;
+Settings shows the theme picker, the configured API URL and the app version.
 
 ## Shared components (`src/ui/`)
 

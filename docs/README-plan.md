@@ -174,10 +174,10 @@ Learn: type-safe boundaries, error modelling, caching strategy.
 
 ### Phase 3: Posts (first vertical slice)
 
-- [ ] Posts list with skeletons, empty and error states, pull-to-refresh
-- [ ] Post detail with author and comments
-- [ ] Component tests for each state, using MSW
-- [ ] `docs/README-architecture.md` describing the feature pattern
+- [x] Posts list with skeletons, empty and error states, pull-to-refresh
+- [x] Post detail with author and comments
+- [x] Component tests for each state, using MSW
+- [x] `docs/README-architecture.md` describing the feature pattern
 
 Learn: this slice sets the pattern every later feature copies.
 
