@@ -4,14 +4,42 @@ How the tests run, and how to add one.
 
 ## Setup
 
-| Kind      | Tool                                | Location                            | Run        |
-| --------- | ----------------------------------- | ----------------------------------- | ---------- |
-| Unit      | Jest (`jest-expo` preset)           | `*.test.ts`, next to the code       | `npm test` |
-| Component | Jest + React Native Testing Library | `*.test.tsx`, next to the component | `npm test` |
+| Kind      | Tool                                | Location                            | Run                |
+| --------- | ----------------------------------- | ----------------------------------- | ------------------ |
+| Unit      | Jest (`jest-expo` preset)           | `*.test.ts`, next to the code       | `npm test`         |
+| Component | Jest + React Native Testing Library | `*.test.tsx`, next to the component | `npm test`         |
+| E2E       | Maestro                             | `.maestro/*.yaml`                   | `npm run test:e2e` |
 
 Jest config lives under `"jest"` in `package.json`. The `jest-expo` preset mocks
 the native parts of the Expo SDK and handles Babel transforms, so tests run in
 Node without a device.
+
+## Coverage threshold
+
+`npm run test:cov` enforces the `coverageThreshold` in `package.json`'s Jest
+config (statements, branches, functions and lines). It fails the run, not just
+the report, if coverage drops below the floor. See
+[CI/CD](README-ci.md#coverage-threshold) for the current numbers and how to
+change them.
+
+## Maestro (end-to-end)
+
+Maestro drives a real build on a device or emulator, unlike the Jest tests
+above, which render in Node against MSW. One flow per tab lives in
+`.maestro/`, covering that tab's happy path: open a detail screen from the
+list and back out of it (Settings instead exercises the theme toggle, since it
+has no list). See [CI/CD](README-ci.md#maestro-flows) for what each flow does
+and how to run one.
+
+Flows select list cards by a `testID` (`post-card-0`, `person-card-0`,
+`album-card-0`), since the titles are live data, not fixed strings to match
+against. That doesn't change the rule below for Jest: those `testID`s exist
+only for Maestro, and component tests still query the same cards by their
+accessible text or role.
+
+Maestro is a standalone CLI, not an npm dependency — install it per
+[Maestro's docs](https://docs.maestro.dev), then run `npm run test:e2e` or
+`maestro test .maestro/<flow>.yaml` against a running dev build.
 
 ## Rules
 

@@ -28,11 +28,12 @@ export function AlbumsScreen() {
   const queryClient = useQueryClient();
   const albumsQuery = useAlbums();
 
-  function renderItem({ item }: { item: Album }) {
+  function renderItem({ item, index }: { item: Album; index: number }) {
     return (
       <AlbumCard
         title={item.title}
         albumId={item.id}
+        testID={`album-card-${index}`}
         onPress={() => {
           void queryClient.prefetchQuery(albumQueryOptions(item.id));
           router.push({

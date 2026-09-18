@@ -14,9 +14,11 @@ TanStack Query · openapi-fetch · Jest + React Native Testing Library · MSW
 
 ## Status
 
-Phase 5 (Albums and photos) is done, aside from a list performance check on a
-low-end emulator profile (needs Android Studio, per Phase 0). See the
-[build plan](docs/README-plan.md) for what comes next.
+Phase 7 (Quality gates) is underway: coverage threshold and docs are done;
+Maestro flows, the Harness pipeline and the EAS preview build are written but
+not run, since each needs a piece of infrastructure this environment doesn't
+have (an emulator, a Harness project, an Expo account). See the
+[build plan](docs/README-plan.md) for the phase-by-phase detail.
 
 ## Quick start
 
@@ -43,3 +45,4 @@ emulator.
 | `src/config/`                                      | Environment parsing and validation                          | [Getting started](docs/README-getting-started.md)            |
 | `src/test/`                                        | Jest setup and test helpers, MSW mocks                      | [Testing](docs/README-testing.md), [API](docs/README-api.md) |
 | `eslint.config.js`, `.prettierrc`, `tsconfig.json` | Lint, format and compiler rules                             | [Code quality](docs/README-code-quality.md)                  |
+| `.maestro/`, `.harness/`, `eas.json`               | E2E flows, CI pipeline, EAS build profiles                  | [CI/CD](docs/README-ci.md)                                   |

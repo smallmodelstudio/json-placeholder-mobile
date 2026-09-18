@@ -1,0 +1,65 @@
+pipeline:
+  name: json-placeholder-mobile
+  identifier: json_placeholder_mobile
+  # Fill these in when this pipeline is imported into a real Harness project.
+  projectIdentifier: <+input>
+  orgIdentifier: <+input>
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: <+input>
+        build: <+input>
+  stages:
+    - stage:
+        name: Quality gates
+        identifier: quality_gates
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Install dependencies
+                  identifier: install
+                  spec:
+                    shell: Sh
+                    command: npm ci
+              - step:
+                  type: Run
+                  name: Lint
+                  identifier: lint
+                  spec:
+                    shell: Sh
+                    command: npm run lint:check
+              - step:
+                  type: Run
+                  name: Typecheck
+                  identifier: typecheck
+                  spec:
+                    shell: Sh
+                    command: npm run typecheck
+              - step:
+                  type: Run
+                  name: Test with coverage
+                  identifier: test
+                  spec:
+                    shell: Sh
+                    command: npm run test:cov
+              - step:
+                  type: Run
+                  name: Contract drift check
+                  identifier: contract_drift
+                  spec:
+                    shell: Sh
+                    # Regenerates src/api/schema.d.ts from the committed openapi/proxy.json
+                    # snapshot and fails if the generated file no longer matches, so a stale
+                    # commit doesn't silently drift from the contract snapshot.
+                    command: npm run api:check-drift

@@ -8,6 +8,7 @@ interface PersonCardProps {
   readonly username: string;
   readonly email: string;
   readonly onPress: () => void;
+  readonly testID: string;
 }
 
 export function PersonCard({
@@ -15,6 +16,7 @@ export function PersonCard({
   username,
   email,
   onPress,
+  testID,
 }: PersonCardProps) {
   return (
     <Card
@@ -25,6 +27,7 @@ export function PersonCard({
       }}
       mode="contained"
       accessibilityLabel={`${name}, @${username}`}
+      testID={testID}
     >
       <Card.Content>
         <Text variant="titleMedium">{name}</Text>

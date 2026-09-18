@@ -221,11 +221,18 @@ Learn: what separates "works" from "feels good".
 
 ### Phase 7: Quality gates
 
-- [ ] Maestro flows for each tab's happy path
-- [ ] Coverage threshold
-- [ ] Harness pipeline: lint, typecheck, test, contract drift check
-- [ ] EAS preview build
-- [ ] Extend `docs/README-testing.md` (MSW, Maestro, coverage); add `docs/README-ci.md`
+- [ ] Maestro flows for each tab's happy path (written in `.maestro/`, keyed off
+      new `testID`s on the list cards; not yet run against a device — needs
+      Android Studio, per Phase 0 and Phase 5)
+- [x] Coverage threshold (`coverageThreshold` in `package.json`'s Jest config)
+- [ ] Harness pipeline: lint, typecheck, test, contract drift check (authored
+      as pipeline-as-code in `.harness/pipeline.yaml`; not wired to a live
+      Harness project — this repo doesn't have one, so `projectIdentifier`,
+      `orgIdentifier` and `connectorRef` are left as `<+input>` placeholders)
+- [ ] EAS preview build (scaffolded `eas.json` with a `preview` profile;
+      no build has been run — that needs an Expo account and costs a cloud
+      build credit, so it's left for whoever owns that account to trigger)
+- [x] Extend `docs/README-testing.md` (MSW, Maestro, coverage); add `docs/README-ci.md`
 
 Learn: CI/CD for mobile.
 

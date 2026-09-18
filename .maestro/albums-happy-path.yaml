@@ -1,0 +1,15 @@
+appId: uk.co.fredjames.jsonplaceholdermobile
+---
+- launchApp
+- tapOn: "Albums"
+- assertVisible:
+    id: "album-card-0"
+- tapOn:
+    id: "album-card-0"
+- assertVisible: "Photo 1"
+- tapOn: "Photo 1"
+- assertVisible: "1 of .*"
+- back
+- back
+- assertVisible:
+    id: "album-card-0"

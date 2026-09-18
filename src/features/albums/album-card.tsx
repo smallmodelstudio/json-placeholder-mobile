@@ -25,9 +25,10 @@ interface AlbumCardProps {
   readonly title: string;
   readonly albumId: number;
   readonly onPress: () => void;
+  readonly testID: string;
 }
 
-export function AlbumCard({ title, albumId, onPress }: AlbumCardProps) {
+export function AlbumCard({ title, albumId, onPress, testID }: AlbumCardProps) {
   const colour = coverPalette[albumId % coverPalette.length] ?? defaultCover;
 
   return (
@@ -39,6 +40,7 @@ export function AlbumCard({ title, albumId, onPress }: AlbumCardProps) {
       style={styles.container}
       accessibilityRole="button"
       accessibilityLabel={`${title} album`}
+      testID={testID}
     >
       <ColourTile colour={colour} style={styles.tile}>
         <Text variant="titleSmall" numberOfLines={2} style={styles.title}>

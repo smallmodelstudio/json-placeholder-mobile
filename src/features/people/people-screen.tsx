@@ -52,12 +52,13 @@ export function PeopleScreen() {
       : all.filter((person) => matches(person, debouncedTerm));
   }, [peopleQuery.data, debouncedTerm]);
 
-  function renderItem({ item }: { item: User }) {
+  function renderItem({ item, index }: { item: User; index: number }) {
     return (
       <PersonCard
         name={item.name}
         username={item.username}
         email={item.email}
+        testID={`person-card-${index}`}
         onPress={() => {
           void queryClient.prefetchQuery(personQueryOptions(item.id));
           router.push({

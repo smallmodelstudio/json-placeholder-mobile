@@ -16,9 +16,11 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
+    "test:e2e": "maestro test .maestro",
     "doctor": "expo-doctor",
     "api:sync": "node scripts/api-sync.mjs",
-    "api:generate": "openapi-typescript openapi/proxy.json -o src/api/schema.d.ts"
+    "api:generate": "openapi-typescript openapi/proxy.json -o src/api/schema.d.ts",
+    "api:check-drift": "npm run api:generate && git diff --exit-code -- src/api/schema.d.ts"
   },
   "jest": {
     "preset": "jest-expo",
@@ -26,6 +28,14 @@
     "moduleNameMapper": {
       "^msw/node$": "<rootDir>/node_modules/msw/lib/node/index.js",
       "^@react-native-community/netinfo$": "<rootDir>/node_modules/@react-native-community/netinfo/jest/netinfo-mock.js"
+    },
+    "coverageThreshold": {
+      "global": {
+        "statements": 85,
+        "branches": 80,
+        "functions": 85,
+        "lines": 85
+      }
     },
     "setupFiles": [
       "<rootDir>/src/test/setup-env.ts"

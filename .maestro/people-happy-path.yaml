@@ -1,0 +1,12 @@
+appId: uk.co.fredjames.jsonplaceholdermobile
+---
+- launchApp
+- tapOn: "People"
+- assertVisible:
+    text: "Search people"
+- tapOn:
+    id: "person-card-0"
+- assertVisible: "Todos"
+- back
+- assertVisible:
+    text: "Search people"

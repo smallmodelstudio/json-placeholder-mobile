@@ -1,0 +1,12 @@
+appId: uk.co.fredjames.jsonplaceholdermobile
+---
+- launchApp
+- tapOn: "Posts"
+- assertVisible:
+    id: "post-card-0"
+- tapOn:
+    id: "post-card-0"
+- assertVisible: "Comments"
+- back
+- assertVisible:
+    id: "post-card-0"

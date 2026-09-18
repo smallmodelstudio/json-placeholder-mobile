@@ -8,6 +8,7 @@ interface PostCardProps {
   readonly excerpt: string;
   readonly authorName: string | undefined;
   readonly onPress: () => void;
+  readonly testID: string;
 }
 
 export function PostCard({
@@ -15,6 +16,7 @@ export function PostCard({
   excerpt,
   authorName,
   onPress,
+  testID,
 }: PostCardProps) {
   return (
     <Card
@@ -27,6 +29,7 @@ export function PostCard({
       accessibilityLabel={
         authorName === undefined ? title : `${title}, by ${authorName}`
       }
+      testID={testID}
     >
       <Card.Content>
         <Text variant="titleMedium" numberOfLines={2}>

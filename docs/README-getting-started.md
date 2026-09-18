@@ -9,6 +9,7 @@ How to install, configure and run the app locally.
 | Node.js                               | 24, pinned in `.nvmrc`            | Everything                       |
 | Android Studio (SDK, emulator, `adb`) | Recent                            | Running on Android               |
 | The proxy API                         | Any version matching the contract | Real data (not needed for tests) |
+| [Maestro](https://docs.maestro.dev)   | Recent                            | E2E flows (`npm run test:e2e`)   |
 
 The web target (`npm run web`) needs neither Android Studio nor a device, which
 makes it the quickest way to check a change. Treat Android as the real target,
@@ -71,17 +72,18 @@ Android only for that reason — see [API](docs/README-api.md#web-and-cors).
 
 ## npm scripts
 
-| Script       | Does                                                         |
-| ------------ | ------------------------------------------------------------ |
-| `start`      | Start the Expo dev server                                    |
-| `android`    | Start the dev server and open Android                        |
-| `ios`        | Start the dev server and open iOS (macOS only)               |
-| `web`        | Start the dev server and open the web                        |
-| `lint`       | ESLint, applying auto-fixes                                  |
-| `lint:check` | ESLint without fixes; for CI                                 |
-| `format`     | Prettier over the repo                                       |
-| `typecheck`  | Type-check with `tsc`; emits nothing                         |
-| `test`       | Jest tests                                                   |
-| `test:watch` | Jest tests; re-run on change                                 |
-| `test:cov`   | Jest tests with a coverage report                            |
-| `doctor`     | `expo-doctor`: checks dependency versions and project config |
+| Script       | Does                                                               |
+| ------------ | ------------------------------------------------------------------ |
+| `start`      | Start the Expo dev server                                          |
+| `android`    | Start the dev server and open Android                              |
+| `ios`        | Start the dev server and open iOS (macOS only)                     |
+| `web`        | Start the dev server and open the web                              |
+| `lint`       | ESLint, applying auto-fixes                                        |
+| `lint:check` | ESLint without fixes; for CI                                       |
+| `format`     | Prettier over the repo                                             |
+| `typecheck`  | Type-check with `tsc`; emits nothing                               |
+| `test`       | Jest tests                                                         |
+| `test:watch` | Jest tests; re-run on change                                       |
+| `test:cov`   | Jest tests with a coverage report; enforces the coverage threshold |
+| `test:e2e`   | Maestro flows in `.maestro/`, against a running dev build          |
+| `doctor`     | `expo-doctor`: checks dependency versions and project config       |

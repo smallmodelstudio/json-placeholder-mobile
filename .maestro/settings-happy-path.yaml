@@ -1,0 +1,10 @@
+appId: uk.co.fredjames.jsonplaceholdermobile
+---
+- launchApp
+- tapOn: "Settings"
+- assertVisible: "Theme"
+- tapOn: "Dark"
+- tapOn: "Light"
+- tapOn: "System"
+- assertVisible: "API URL"
+- assertVisible: "App version"

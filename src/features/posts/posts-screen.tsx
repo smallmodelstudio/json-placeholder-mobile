@@ -39,12 +39,13 @@ export function PostsScreen() {
     return byId;
   }, [usersQuery.data]);
 
-  function renderItem({ item }: { item: Post }) {
+  function renderItem({ item, index }: { item: Post; index: number }) {
     return (
       <PostCard
         title={item.title}
         excerpt={item.body}
         authorName={authorNamesById.get(item.userId)}
+        testID={`post-card-${index}`}
         onPress={() => {
           router.push({
             pathname: '/post/[id]',
