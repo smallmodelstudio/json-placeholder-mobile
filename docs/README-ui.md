@@ -33,7 +33,9 @@ keeping the splash screen up until they're ready, then wraps the app in
 anything in Phases 0–4; it's there for the photo viewer's pinch-to-zoom
 (`react-native-gesture-handler`'s `GestureDetector` needs it as an ancestor to
 work reliably, especially on Android), and wrapping the whole app is simpler
-and safer than scoping it to one screen.
+and safer than scoping it to one screen. `OfflineBanner` sits directly above
+the `Stack`, so it overlays every route without each screen mounting it
+itself.
 
 ## Navigation
 
@@ -72,26 +74,77 @@ picker, the configured API URL and the app version.
 
 ## Shared components (`src/ui/`)
 
-| Component    | Purpose                                                                                                                                                        |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Screen`     | Safe-area wrapper with the theme's background colour; `padded` and `edges` are configurable so a future edge-to-edge list can opt out of the default padding   |
-| `EmptyState` | Icon, title and optional message for a list with nothing in it                                                                                                 |
-| `ErrorState` | Icon, message, optional retry button and optional correlation ID (`Ref: …`), for the failure state the API contract calls for                                  |
-| `Skeleton`   | A pulsing placeholder block (via Reanimated) for the loading state; hidden from screen readers                                                                 |
-| `ColourTile` | A solid-colour tile, falling back to the theme's surface colour when no colour is given — see `docs/README-architecture.md`'s "Colour tiles instead of images" |
+| Component                    | Purpose                                                                                                                                                        |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Screen`                     | Safe-area wrapper with the theme's background colour; `padded` and `edges` are configurable so a future edge-to-edge list can opt out of the default padding   |
+| `EmptyState`                 | Icon, title and optional message for a list with nothing in it                                                                                                 |
+| `ErrorState`                 | Icon, message, optional retry button and optional correlation ID (`Ref: …`), for the failure state the API contract calls for                                  |
+| `Skeleton`                   | A pulsing placeholder block (via Reanimated) for the loading state; hidden from screen readers                                                                 |
+| `ColourTile`                 | A solid-colour tile, falling back to the theme's surface colour when no colour is given — see `docs/README-architecture.md`'s "Colour tiles instead of images" |
+| `OfflineBanner`              | A banner shown across every screen when `@react-native-community/netinfo` reports `isConnected === false`; see "Motion and haptics" below                      |
+| `PressableScale`             | A `Pressable` that scales down slightly on press, for grid tiles (`AlbumCard`, `PhotoTile`) that have no Paper ripple of their own                             |
+| `hapticTap` / `hapticSelect` | Thin wrappers over `expo-haptics` — a light impact for presses/navigation/refresh, a selection tick for a segmented control or toggle changing value           |
 
 These cover the loading, empty and error states every screen needs per
 `docs/README-plan.md`; the success state is each feature's own content.
+
+## Motion and haptics
+
+Phase 6 polish, layered onto the existing screens without changing their
+state model:
+
+- **Content fades in on state change.** Each screen wraps its
+  loading/error/empty/success switch in an `Animated.View` keyed by the
+  driving query's `status` (`entering={FadeIn.duration(200)}`). Keying by
+  `status` rather than remounting on every render means a pull-to-refresh
+  (which keeps `status: 'success'`) doesn't re-trigger the fade — only an
+  actual pending → success/error transition does.
+- **Grid tiles get press feedback.** `AlbumCard` and `PhotoTile` use
+  `PressableScale` instead of a plain `Pressable`, since they have no Material
+  ripple of their own (unlike the `Card`-based `PostCard`/`PersonCard`, whose
+  ripple is already their press feedback).
+- **The photo viewer opens with a fade**, not the default push transition
+  (`animation: 'fade'` on `album/[id]/[photoId]`'s `Stack.Screen` in the root
+  layout), for a lightbox feel.
+- **Haptics mark the interactions that do something**: a light tap
+  (`hapticTap`) on every card/tile press, pull-to-refresh, `ErrorState`'s
+  retry button, a contact row on the profile screen and the photo viewer's
+  double-tap-to-zoom; a selection tick (`hapticSelect`) when a
+  `SegmentedButtons` value changes (profile segments, the Settings theme
+  picker).
+
+`OfflineBanner` reads `@react-native-community/netinfo`'s `useNetInfo()` hook
+and renders only when `isConnected === false` — `null` (not yet known) and
+`true` render nothing, so it doesn't flash on at app start before the first
+check resolves. Its test (`offline-banner.test.tsx`) drives this by mocking
+`useNetInfo`'s return value directly: `package.json`'s
+`jest.moduleNameMapper` points `@react-native-community/netinfo` at the
+package's own `jest/netinfo-mock.js`, which is what makes `useNetInfo` a
+`jest.fn()` in the first place.
 
 ## Accessibility
 
 - Interactive elements use Paper components (`Button`, `SegmentedButtons`),
   which carry the right accessibility roles and states by default.
 - `ErrorState` renders with `accessibilityRole="alert"` so a screen reader
-  announces a failure as it appears.
+  announces a failure as it appears; `OfflineBanner` does the same, plus
+  `accessibilityLiveRegion="polite"` so Android announces it appearing and
+  disappearing, not just its initial render.
 - Text uses Paper's `Text`, which scales with the system font size setting;
   none of the shared components fix a line height that would clip at larger
   sizes.
+- Rows with no visible label beyond an icon or a colour get an explicit
+  `accessibilityLabel`: `PostCard`/`PersonCard` (title plus author/username,
+  read as one unit rather than every `Text` child separately), `AlbumCard`
+  (`"<title> album"`), `PhotoTile` (`"Photo <n>"`, since a colour tile has
+  nothing else to read), the photo viewer's `ZoomablePhoto`
+  (`accessibilityHint="Double tap to zoom"`), and the profile screen's
+  email/phone/website rows (`"Email <address>"` etc., alongside their
+  `List.Icon`).
+- This is a code-level pass — labels, roles and live regions — not a
+  verified TalkBack run; the app hasn't been driven on an emulator yet (see
+  `docs/README-plan.md`'s Phase 0 and Phase 5 entries for the same
+  Android Studio constraint).
 
 ## Testing
 

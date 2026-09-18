@@ -1,7 +1,7 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
 
-import { ColourTile } from '@/ui';
+import { ColourTile, hapticTap, PressableScale } from '@/ui';
 
 // A fixed, pleasant palette to hash an album's cover colour from. There's no
 // cheap way to show a real cover photo for every album in the grid — that
@@ -31,17 +31,21 @@ export function AlbumCard({ title, albumId, onPress }: AlbumCardProps) {
   const colour = coverPalette[albumId % coverPalette.length] ?? defaultCover;
 
   return (
-    <Pressable
-      onPress={onPress}
+    <PressableScale
+      onPress={() => {
+        hapticTap();
+        onPress();
+      }}
       style={styles.container}
       accessibilityRole="button"
+      accessibilityLabel={`${title} album`}
     >
       <ColourTile colour={colour} style={styles.tile}>
         <Text variant="titleSmall" numberOfLines={2} style={styles.title}>
           {title}
         </Text>
       </ColourTile>
-    </Pressable>
+    </PressableScale>
   );
 }
 

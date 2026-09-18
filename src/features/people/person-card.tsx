@@ -1,6 +1,8 @@
 import { StyleSheet } from 'react-native';
 import { Card, Text } from 'react-native-paper';
 
+import { hapticTap } from '@/ui';
+
 interface PersonCardProps {
   readonly name: string;
   readonly username: string;
@@ -15,7 +17,15 @@ export function PersonCard({
   onPress,
 }: PersonCardProps) {
   return (
-    <Card style={styles.card} onPress={onPress} mode="contained">
+    <Card
+      style={styles.card}
+      onPress={() => {
+        hapticTap();
+        onPress();
+      }}
+      mode="contained"
+      accessibilityLabel={`${name}, @${username}`}
+    >
       <Card.Content>
         <Text variant="titleMedium">{name}</Text>
         <Text variant="bodyMedium" style={styles.username}>

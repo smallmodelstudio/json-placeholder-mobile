@@ -4,10 +4,18 @@ import { Linking, ScrollView, StyleSheet, View } from 'react-native';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { List, SegmentedButtons, Text } from 'react-native-paper';
 
 import type { ApiError, components } from '@/api';
-import { EmptyState, ErrorState, Screen, Skeleton } from '@/ui';
+import {
+  EmptyState,
+  ErrorState,
+  hapticSelect,
+  hapticTap,
+  Screen,
+  Skeleton,
+} from '@/ui';
 
 import { usePerson } from './use-person';
 import { usePersonAlbums } from './use-person-albums';
@@ -105,138 +113,157 @@ export function PersonProfileScreen() {
     <>
       <Stack.Screen options={{ title: personQuery.data?.name ?? 'Profile' }} />
       <Screen padded={false}>
-        {personQuery.isPending ? (
-          <ProfileSkeleton />
-        ) : personQuery.isError ? (
-          <ErrorState
-            message={personQuery.error.message}
-            correlationId={personQuery.error.correlationId}
-            onRetry={() => {
-              void personQuery.refetch();
-            }}
-          />
-        ) : (
-          <ScrollView contentContainerStyle={styles.content}>
-            <Text variant="headlineSmall">{personQuery.data.name}</Text>
-            <Text variant="bodyMedium" style={styles.username}>
-              @{personQuery.data.username}
-            </Text>
+        <Animated.View
+          key={personQuery.status}
+          entering={FadeIn.duration(200)}
+          style={styles.fill}
+        >
+          {personQuery.isPending ? (
+            <ProfileSkeleton />
+          ) : personQuery.isError ? (
+            <ErrorState
+              message={personQuery.error.message}
+              correlationId={personQuery.error.correlationId}
+              onRetry={() => {
+                void personQuery.refetch();
+              }}
+            />
+          ) : (
+            <ScrollView contentContainerStyle={styles.content}>
+              <Text variant="headlineSmall">{personQuery.data.name}</Text>
+              <Text variant="bodyMedium" style={styles.username}>
+                @{personQuery.data.username}
+              </Text>
 
-            <List.Item
-              title={personQuery.data.email}
-              left={(props) => <List.Icon {...props} icon="email-outline" />}
-              onPress={() => {
-                void Linking.openURL(`mailto:${personQuery.data.email}`);
-              }}
-            />
-            <List.Item
-              title={personQuery.data.phone}
-              left={(props) => <List.Icon {...props} icon="phone-outline" />}
-              onPress={() => {
-                void Linking.openURL(`tel:${personQuery.data.phone}`);
-              }}
-            />
-            <List.Item
-              title={personQuery.data.website}
-              left={(props) => <List.Icon {...props} icon="web" />}
-              onPress={() => {
-                void Linking.openURL(`https://${personQuery.data.website}`);
-              }}
-            />
-            <List.Item
-              title={personQuery.data.company.name}
-              description={personQuery.data.company.catchPhrase}
-              left={(props) => (
-                <List.Icon {...props} icon="briefcase-outline" />
+              <List.Item
+                title={personQuery.data.email}
+                left={(props) => <List.Icon {...props} icon="email-outline" />}
+                accessibilityLabel={`Email ${personQuery.data.email}`}
+                onPress={() => {
+                  hapticTap();
+                  void Linking.openURL(`mailto:${personQuery.data.email}`);
+                }}
+              />
+              <List.Item
+                title={personQuery.data.phone}
+                left={(props) => <List.Icon {...props} icon="phone-outline" />}
+                accessibilityLabel={`Phone ${personQuery.data.phone}`}
+                onPress={() => {
+                  hapticTap();
+                  void Linking.openURL(`tel:${personQuery.data.phone}`);
+                }}
+              />
+              <List.Item
+                title={personQuery.data.website}
+                left={(props) => <List.Icon {...props} icon="web" />}
+                accessibilityLabel={`Website ${personQuery.data.website}`}
+                onPress={() => {
+                  hapticTap();
+                  void Linking.openURL(`https://${personQuery.data.website}`);
+                }}
+              />
+              <List.Item
+                title={personQuery.data.company.name}
+                description={personQuery.data.company.catchPhrase}
+                left={(props) => (
+                  <List.Icon {...props} icon="briefcase-outline" />
+                )}
+              />
+              <List.Item
+                title={`${personQuery.data.address.street}, ${personQuery.data.address.city}`}
+                description={personQuery.data.address.zipcode}
+                left={(props) => (
+                  <List.Icon {...props} icon="map-marker-outline" />
+                )}
+              />
+
+              <SegmentedButtons
+                value={segment}
+                onValueChange={(value) => {
+                  hapticSelect();
+                  setSegment(value);
+                }}
+                buttons={segmentOptions}
+                style={styles.segmented}
+              />
+
+              {segment === 'posts' && (
+                <SegmentSection<Post>
+                  query={postsQuery}
+                  emptyIcon="post-outline"
+                  emptyTitle="No posts yet"
+                  emptyMessage={`${personQuery.data.name} hasn't written anything yet.`}
+                  keyExtractor={(post) => String(post.id)}
+                  renderItem={(post) => (
+                    <List.Item
+                      title={post.title}
+                      description={post.body}
+                      onPress={() => {
+                        hapticTap();
+                        router.push({
+                          pathname: '/post/[id]',
+                          params: { id: String(post.id) },
+                        });
+                      }}
+                    />
+                  )}
+                />
               )}
-            />
-            <List.Item
-              title={`${personQuery.data.address.street}, ${personQuery.data.address.city}`}
-              description={personQuery.data.address.zipcode}
-              left={(props) => (
-                <List.Icon {...props} icon="map-marker-outline" />
+
+              {segment === 'albums' && (
+                <SegmentSection<Album>
+                  query={albumsQuery}
+                  emptyIcon="image-multiple-outline"
+                  emptyTitle="No albums yet"
+                  emptyMessage={`${personQuery.data.name} hasn't created any albums yet.`}
+                  keyExtractor={(album) => String(album.id)}
+                  renderItem={(album) => (
+                    <List.Item
+                      title={album.title}
+                      left={(props) => (
+                        <List.Icon {...props} icon="image-outline" />
+                      )}
+                    />
+                  )}
+                />
               )}
-            />
 
-            <SegmentedButtons
-              value={segment}
-              onValueChange={setSegment}
-              buttons={segmentOptions}
-              style={styles.segmented}
-            />
-
-            {segment === 'posts' && (
-              <SegmentSection<Post>
-                query={postsQuery}
-                emptyIcon="post-outline"
-                emptyTitle="No posts yet"
-                emptyMessage={`${personQuery.data.name} hasn't written anything yet.`}
-                keyExtractor={(post) => String(post.id)}
-                renderItem={(post) => (
-                  <List.Item
-                    title={post.title}
-                    description={post.body}
-                    onPress={() => {
-                      router.push({
-                        pathname: '/post/[id]',
-                        params: { id: String(post.id) },
-                      });
-                    }}
-                  />
-                )}
-              />
-            )}
-
-            {segment === 'albums' && (
-              <SegmentSection<Album>
-                query={albumsQuery}
-                emptyIcon="image-multiple-outline"
-                emptyTitle="No albums yet"
-                emptyMessage={`${personQuery.data.name} hasn't created any albums yet.`}
-                keyExtractor={(album) => String(album.id)}
-                renderItem={(album) => (
-                  <List.Item
-                    title={album.title}
-                    left={(props) => (
-                      <List.Icon {...props} icon="image-outline" />
-                    )}
-                  />
-                )}
-              />
-            )}
-
-            {segment === 'todos' && (
-              <SegmentSection<Todo>
-                query={todosQuery}
-                emptyIcon="checkbox-marked-circle-outline"
-                emptyTitle="No todos yet"
-                emptyMessage={`${personQuery.data.name} hasn't added any todos yet.`}
-                keyExtractor={(todo) => String(todo.id)}
-                renderItem={(todo) => (
-                  <List.Item
-                    title={todo.title}
-                    left={(props) => (
-                      <List.Icon
-                        {...props}
-                        icon={
-                          todo.completed
-                            ? 'checkbox-marked-outline'
-                            : 'checkbox-blank-outline'
-                        }
-                      />
-                    )}
-                  />
-                )}
-              />
-            )}
-          </ScrollView>
-        )}
+              {segment === 'todos' && (
+                <SegmentSection<Todo>
+                  query={todosQuery}
+                  emptyIcon="checkbox-marked-circle-outline"
+                  emptyTitle="No todos yet"
+                  emptyMessage={`${personQuery.data.name} hasn't added any todos yet.`}
+                  keyExtractor={(todo) => String(todo.id)}
+                  renderItem={(todo) => (
+                    <List.Item
+                      title={todo.title}
+                      left={(props) => (
+                        <List.Icon
+                          {...props}
+                          icon={
+                            todo.completed
+                              ? 'checkbox-marked-outline'
+                              : 'checkbox-blank-outline'
+                          }
+                        />
+                      )}
+                    />
+                  )}
+                />
+              )}
+            </ScrollView>
+          )}
+        </Animated.View>
       </Screen>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  fill: {
+    flex: 1,
+  },
   padded: {
     padding: 16,
   },

@@ -1,5 +1,6 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { Text } from 'react-native-paper';
 
 import { EmptyState, ErrorState, Screen, Skeleton } from '@/ui';
@@ -43,71 +44,80 @@ export function PostDetailScreen() {
     <>
       <Stack.Screen options={{ title: postQuery.data?.title ?? 'Post' }} />
       <Screen>
-        {postQuery.isPending ? (
-          <PostDetailSkeleton />
-        ) : postQuery.isError ? (
-          <ErrorState
-            message={postQuery.error.message}
-            correlationId={postQuery.error.correlationId}
-            onRetry={() => {
-              void postQuery.refetch();
-            }}
-          />
-        ) : (
-          <ScrollView contentContainerStyle={styles.content}>
-            <Text variant="headlineSmall">{postQuery.data.title}</Text>
+        <Animated.View
+          key={postQuery.status}
+          entering={FadeIn.duration(200)}
+          style={styles.fill}
+        >
+          {postQuery.isPending ? (
+            <PostDetailSkeleton />
+          ) : postQuery.isError ? (
+            <ErrorState
+              message={postQuery.error.message}
+              correlationId={postQuery.error.correlationId}
+              onRetry={() => {
+                void postQuery.refetch();
+              }}
+            />
+          ) : (
+            <ScrollView contentContainerStyle={styles.content}>
+              <Text variant="headlineSmall">{postQuery.data.title}</Text>
 
-            {authorQuery.isPending ? (
-              <Skeleton height={16} width="40%" style={styles.author} />
-            ) : (
-              <Text variant="labelLarge" style={styles.author}>
-                {authorQuery.isError
-                  ? 'Unknown author'
-                  : `By ${authorQuery.data.name}`}
+              {authorQuery.isPending ? (
+                <Skeleton height={16} width="40%" style={styles.author} />
+              ) : (
+                <Text variant="labelLarge" style={styles.author}>
+                  {authorQuery.isError
+                    ? 'Unknown author'
+                    : `By ${authorQuery.data.name}`}
+                </Text>
+              )}
+
+              <Text variant="bodyLarge" style={styles.body}>
+                {postQuery.data.body}
               </Text>
-            )}
 
-            <Text variant="bodyLarge" style={styles.body}>
-              {postQuery.data.body}
-            </Text>
-
-            <Text variant="titleMedium" style={styles.commentsHeading}>
-              Comments
-            </Text>
-            {commentsQuery.isPending ? (
-              <CommentsSkeleton />
-            ) : commentsQuery.isError ? (
-              <ErrorState
-                message={commentsQuery.error.message}
-                correlationId={commentsQuery.error.correlationId}
-                onRetry={() => {
-                  void commentsQuery.refetch();
-                }}
-              />
-            ) : commentsQuery.data.length === 0 ? (
-              <EmptyState
-                icon="comment-outline"
-                title="No comments yet"
-                message="Be the first to say something about this post."
-              />
-            ) : (
-              commentsQuery.data.map((comment) => (
-                <CommentCard
-                  key={comment.id}
-                  name={comment.name}
-                  email={comment.email}
-                  body={comment.body}
+              <Text variant="titleMedium" style={styles.commentsHeading}>
+                Comments
+              </Text>
+              {commentsQuery.isPending ? (
+                <CommentsSkeleton />
+              ) : commentsQuery.isError ? (
+                <ErrorState
+                  message={commentsQuery.error.message}
+                  correlationId={commentsQuery.error.correlationId}
+                  onRetry={() => {
+                    void commentsQuery.refetch();
+                  }}
                 />
-              ))
-            )}
-          </ScrollView>
-        )}
+              ) : commentsQuery.data.length === 0 ? (
+                <EmptyState
+                  icon="comment-outline"
+                  title="No comments yet"
+                  message="Be the first to say something about this post."
+                />
+              ) : (
+                commentsQuery.data.map((comment) => (
+                  <CommentCard
+                    key={comment.id}
+                    name={comment.name}
+                    email={comment.email}
+                    body={comment.body}
+                  />
+                ))
+              )}
+            </ScrollView>
+          )}
+        </Animated.View>
       </Screen>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  fill: {
+    flex: 1,
+  },
   content: {
     paddingBottom: 24,
   },

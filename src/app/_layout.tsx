@@ -24,6 +24,7 @@ import {
   ThemeModeProvider,
   useThemeMode,
 } from '@/theme';
+import { OfflineBanner } from '@/ui';
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -36,6 +37,7 @@ function ThemedApp() {
       <NavigationThemeProvider
         value={isDark ? darkNavigationTheme : lightNavigationTheme}
       >
+        <OfflineBanner />
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="post/[id]" options={{ headerShown: true }} />
@@ -43,7 +45,7 @@ function ThemedApp() {
           <Stack.Screen name="album/[id]" options={{ headerShown: true }} />
           <Stack.Screen
             name="album/[id]/[photoId]"
-            options={{ headerShown: true }}
+            options={{ headerShown: true, animation: 'fade' }}
           />
         </Stack>
       </NavigationThemeProvider>

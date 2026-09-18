@@ -2,6 +2,8 @@ import { StyleSheet, View } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Button, Text, useTheme } from 'react-native-paper';
 
+import { hapticTap } from './haptics';
+
 interface ErrorStateProps {
   readonly title?: string;
   readonly message: string;
@@ -42,7 +44,14 @@ export function ErrorState({
         </Text>
       )}
       {onRetry !== undefined && (
-        <Button mode="contained-tonal" onPress={onRetry} style={styles.retry}>
+        <Button
+          mode="contained-tonal"
+          onPress={() => {
+            hapticTap();
+            onRetry();
+          }}
+          style={styles.retry}
+        >
           Retry
         </Button>
       )}

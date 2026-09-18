@@ -1,9 +1,10 @@
 import { StyleSheet, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 import type { components } from '@/api';
-import { EmptyState, ErrorState, Screen, Skeleton } from '@/ui';
+import { EmptyState, ErrorState, hapticTap, Screen, Skeleton } from '@/ui';
 
 import { PhotoTile } from './photo-tile';
 import { useAlbum } from './use-album';
@@ -42,10 +43,11 @@ export function AlbumPhotosScreen() {
   const albumQuery = useAlbum(albumId);
   const photosQuery = useAlbumPhotos(albumId);
 
-  function renderItem({ item }: { item: Photo }) {
+  function renderItem({ item, index }: { item: Photo; index: number }) {
     return (
       <PhotoTile
         thumbnailUrl={item.thumbnailUrl}
+        label={`Photo ${index + 1}`}
         testID={`photo-tile-${item.id}`}
         onPress={() => {
           router.push({
@@ -67,41 +69,51 @@ export function AlbumPhotosScreen() {
         }}
       />
       <Screen padded={!hasPhotos}>
-        {photosQuery.isPending ? (
-          <AlbumPhotosSkeleton />
-        ) : photosQuery.isError ? (
-          <ErrorState
-            message={photosQuery.error.message}
-            correlationId={photosQuery.error.correlationId}
-            onRetry={() => {
-              void photosQuery.refetch();
-            }}
-          />
-        ) : photosQuery.data.length === 0 ? (
-          <EmptyState
-            icon="image-off-outline"
-            title="No photos yet"
-            message="This album doesn't have any photos yet."
-          />
-        ) : (
-          <FlashList
-            data={photosQuery.data}
-            renderItem={renderItem}
-            keyExtractor={(item) => String(item.id)}
-            numColumns={3}
-            contentContainerStyle={styles.listContent}
-            onRefresh={() => {
-              void photosQuery.refetch();
-            }}
-            refreshing={photosQuery.isRefetching}
-          />
-        )}
+        <Animated.View
+          key={photosQuery.status}
+          entering={FadeIn.duration(200)}
+          style={styles.fill}
+        >
+          {photosQuery.isPending ? (
+            <AlbumPhotosSkeleton />
+          ) : photosQuery.isError ? (
+            <ErrorState
+              message={photosQuery.error.message}
+              correlationId={photosQuery.error.correlationId}
+              onRetry={() => {
+                void photosQuery.refetch();
+              }}
+            />
+          ) : photosQuery.data.length === 0 ? (
+            <EmptyState
+              icon="image-off-outline"
+              title="No photos yet"
+              message="This album doesn't have any photos yet."
+            />
+          ) : (
+            <FlashList
+              data={photosQuery.data}
+              renderItem={renderItem}
+              keyExtractor={(item) => String(item.id)}
+              numColumns={3}
+              contentContainerStyle={styles.listContent}
+              onRefresh={() => {
+                hapticTap();
+                void photosQuery.refetch();
+              }}
+              refreshing={photosQuery.isRefetching}
+            />
+          )}
+        </Animated.View>
       </Screen>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  fill: {
+    flex: 1,
+  },
   listContent: {
     padding: 6,
   },

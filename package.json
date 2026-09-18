@@ -24,7 +24,8 @@
     "preset": "jest-expo",
     "resolver": "react-native-worklets/jest/resolver.js",
     "moduleNameMapper": {
-      "^msw/node$": "<rootDir>/node_modules/msw/lib/node/index.js"
+      "^msw/node$": "<rootDir>/node_modules/msw/lib/node/index.js",
+      "^@react-native-community/netinfo$": "<rootDir>/node_modules/@react-native-community/netinfo/jest/netinfo-mock.js"
     },
     "setupFiles": [
       "<rootDir>/src/test/setup-env.ts"
@@ -53,12 +54,14 @@
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
     "@expo/vector-icons": "^15.0.2",
+    "@react-native-community/netinfo": "12.0.1",
     "@shopify/flash-list": "2.0.2",
     "@tanstack/react-query": "^5.103.1",
     "expo": "~57.0.23",
     "expo-constants": "~57.0.18",
     "expo-crypto": "~57.0.3",
     "expo-font": "~57.0.4",
+    "expo-haptics": "~57.0.3",
     "expo-image": "~57.0.5",
     "expo-linking": "~57.0.10",
     "expo-router": "~57.0.21",

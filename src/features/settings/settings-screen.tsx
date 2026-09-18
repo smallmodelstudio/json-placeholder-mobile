@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { SegmentedButtons, Text } from 'react-native-paper';
 
 import { config } from '@/config';
-import { Screen } from '@/ui';
+import { hapticSelect, Screen } from '@/ui';
 import { useThemeMode, type ThemeMode } from '@/theme';
 
 const modeOptions: { readonly value: ThemeMode; readonly label: string }[] = [
@@ -22,6 +22,7 @@ export function SettingsScreen() {
         <SegmentedButtons
           value={mode}
           onValueChange={(value) => {
+            hapticSelect();
             setMode(value);
           }}
           buttons={modeOptions}

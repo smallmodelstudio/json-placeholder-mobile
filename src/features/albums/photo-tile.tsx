@@ -1,23 +1,35 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+
+import { hapticTap, PressableScale } from '@/ui';
 
 import { PhotoImage } from './photo-image';
 
 interface PhotoTileProps {
   readonly thumbnailUrl: string;
+  readonly label: string;
   readonly onPress: () => void;
   readonly testID?: string;
 }
 
-export function PhotoTile({ thumbnailUrl, onPress, testID }: PhotoTileProps) {
+export function PhotoTile({
+  thumbnailUrl,
+  label,
+  onPress,
+  testID,
+}: PhotoTileProps) {
   return (
-    <Pressable
-      onPress={onPress}
+    <PressableScale
+      onPress={() => {
+        hapticTap();
+        onPress();
+      }}
       style={styles.container}
       accessibilityRole="button"
+      accessibilityLabel={label}
       testID={testID}
     >
       <PhotoImage url={thumbnailUrl} style={styles.tile} />
-    </Pressable>
+    </PressableScale>
   );
 }
 

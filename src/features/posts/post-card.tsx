@@ -1,6 +1,8 @@
 import { StyleSheet } from 'react-native';
 import { Card, Text } from 'react-native-paper';
 
+import { hapticTap } from '@/ui';
+
 interface PostCardProps {
   readonly title: string;
   readonly excerpt: string;
@@ -15,7 +17,17 @@ export function PostCard({
   onPress,
 }: PostCardProps) {
   return (
-    <Card style={styles.card} onPress={onPress} mode="contained">
+    <Card
+      style={styles.card}
+      onPress={() => {
+        hapticTap();
+        onPress();
+      }}
+      mode="contained"
+      accessibilityLabel={
+        authorName === undefined ? title : `${title}, by ${authorName}`
+      }
+    >
       <Card.Content>
         <Text variant="titleMedium" numberOfLines={2}>
           {title}

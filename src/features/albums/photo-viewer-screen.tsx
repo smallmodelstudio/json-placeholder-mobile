@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Stack, useLocalSearchParams } from 'expo-router';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 import type { components } from '@/api';
 import { EmptyState, ErrorState, Screen, Skeleton } from '@/ui';
@@ -57,45 +58,54 @@ export function PhotoViewerScreen() {
         }}
       />
       <Screen padded={false}>
-        {photosQuery.isPending ? (
-          <View testID="photo-viewer-skeleton" style={styles.page}>
-            <Skeleton height="100%" />
-          </View>
-        ) : photosQuery.isError ? (
-          <ErrorState
-            message={photosQuery.error.message}
-            correlationId={photosQuery.error.correlationId}
-            onRetry={() => {
-              void photosQuery.refetch();
-            }}
-          />
-        ) : photosQuery.data.length === 0 ? (
-          <EmptyState
-            icon="image-off-outline"
-            title="No photos"
-            message="This album doesn't have any photos to view."
-          />
-        ) : (
-          <FlashList
-            data={photosQuery.data}
-            renderItem={renderItem}
-            keyExtractor={(item) => String(item.id)}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            scrollEnabled={scrollEnabled}
-            initialScrollIndex={index}
-            onMomentumScrollEnd={(event) => {
-              setIndex(Math.round(event.nativeEvent.contentOffset.x / width));
-            }}
-          />
-        )}
+        <Animated.View
+          key={photosQuery.status}
+          entering={FadeIn.duration(200)}
+          style={styles.fill}
+        >
+          {photosQuery.isPending ? (
+            <View testID="photo-viewer-skeleton" style={styles.page}>
+              <Skeleton height="100%" />
+            </View>
+          ) : photosQuery.isError ? (
+            <ErrorState
+              message={photosQuery.error.message}
+              correlationId={photosQuery.error.correlationId}
+              onRetry={() => {
+                void photosQuery.refetch();
+              }}
+            />
+          ) : photosQuery.data.length === 0 ? (
+            <EmptyState
+              icon="image-off-outline"
+              title="No photos"
+              message="This album doesn't have any photos to view."
+            />
+          ) : (
+            <FlashList
+              data={photosQuery.data}
+              renderItem={renderItem}
+              keyExtractor={(item) => String(item.id)}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              scrollEnabled={scrollEnabled}
+              initialScrollIndex={index}
+              onMomentumScrollEnd={(event) => {
+                setIndex(Math.round(event.nativeEvent.contentOffset.x / width));
+              }}
+            />
+          )}
+        </Animated.View>
       </Screen>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  fill: {
+    flex: 1,
+  },
   page: {
     flex: 1,
   },

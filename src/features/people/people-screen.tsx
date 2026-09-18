@@ -3,10 +3,11 @@ import { StyleSheet, View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 import { FlashList } from '@shopify/flash-list';
 import { useRouter } from 'expo-router';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { Searchbar } from 'react-native-paper';
 
 import type { components } from '@/api';
-import { EmptyState, ErrorState, Screen, Skeleton } from '@/ui';
+import { EmptyState, ErrorState, hapticTap, Screen, Skeleton } from '@/ui';
 
 import { PersonCard } from './person-card';
 import { personQueryOptions } from './use-person';
@@ -75,46 +76,57 @@ export function PeopleScreen() {
           placeholder="Search people"
           value={query}
           onChangeText={setQuery}
+          accessibilityLabel="Search people"
         />
       </View>
 
-      {peopleQuery.isPending ? (
-        <PeopleSkeleton />
-      ) : peopleQuery.isError ? (
-        <ErrorState
-          message={peopleQuery.error.message}
-          correlationId={peopleQuery.error.correlationId}
-          onRetry={() => {
-            void peopleQuery.refetch();
-          }}
-        />
-      ) : people.length === 0 ? (
-        <EmptyState
-          icon="account-search-outline"
-          title={debouncedTerm === '' ? 'No people yet' : 'No matches'}
-          message={
-            debouncedTerm === ''
-              ? 'People will show up here once there are some to meet.'
-              : `No one matches "${debouncedTerm}".`
-          }
-        />
-      ) : (
-        <FlashList
-          data={people}
-          renderItem={renderItem}
-          keyExtractor={(item) => String(item.id)}
-          contentContainerStyle={styles.listContent}
-          onRefresh={() => {
-            void peopleQuery.refetch();
-          }}
-          refreshing={peopleQuery.isRefetching}
-        />
-      )}
+      <Animated.View
+        key={peopleQuery.status}
+        entering={FadeIn.duration(200)}
+        style={styles.fill}
+      >
+        {peopleQuery.isPending ? (
+          <PeopleSkeleton />
+        ) : peopleQuery.isError ? (
+          <ErrorState
+            message={peopleQuery.error.message}
+            correlationId={peopleQuery.error.correlationId}
+            onRetry={() => {
+              void peopleQuery.refetch();
+            }}
+          />
+        ) : people.length === 0 ? (
+          <EmptyState
+            icon="account-search-outline"
+            title={debouncedTerm === '' ? 'No people yet' : 'No matches'}
+            message={
+              debouncedTerm === ''
+                ? 'People will show up here once there are some to meet.'
+                : `No one matches "${debouncedTerm}".`
+            }
+          />
+        ) : (
+          <FlashList
+            data={people}
+            renderItem={renderItem}
+            keyExtractor={(item) => String(item.id)}
+            contentContainerStyle={styles.listContent}
+            onRefresh={() => {
+              hapticTap();
+              void peopleQuery.refetch();
+            }}
+            refreshing={peopleQuery.isRefetching}
+          />
+        )}
+      </Animated.View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  fill: {
+    flex: 1,
+  },
   searchBar: {
     padding: 16,
     paddingBottom: 8,

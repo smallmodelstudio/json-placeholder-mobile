@@ -2,9 +2,10 @@ import { StyleSheet, View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 import { FlashList } from '@shopify/flash-list';
 import { useRouter } from 'expo-router';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 import type { components } from '@/api';
-import { EmptyState, ErrorState, Screen, Skeleton } from '@/ui';
+import { EmptyState, ErrorState, hapticTap, Screen, Skeleton } from '@/ui';
 
 import { AlbumCard } from './album-card';
 import { albumQueryOptions } from './use-album';
@@ -47,40 +48,50 @@ export function AlbumsScreen() {
 
   return (
     <Screen padded={!hasAlbums}>
-      {albumsQuery.isPending ? (
-        <AlbumsSkeleton />
-      ) : albumsQuery.isError ? (
-        <ErrorState
-          message={albumsQuery.error.message}
-          correlationId={albumsQuery.error.correlationId}
-          onRetry={() => {
-            void albumsQuery.refetch();
-          }}
-        />
-      ) : albumsQuery.data.length === 0 ? (
-        <EmptyState
-          icon="image-multiple-outline"
-          title="No albums yet"
-          message="Albums will show up here once there are some to browse."
-        />
-      ) : (
-        <FlashList
-          data={albumsQuery.data}
-          renderItem={renderItem}
-          keyExtractor={(item) => String(item.id)}
-          numColumns={2}
-          contentContainerStyle={styles.listContent}
-          onRefresh={() => {
-            void albumsQuery.refetch();
-          }}
-          refreshing={albumsQuery.isRefetching}
-        />
-      )}
+      <Animated.View
+        key={albumsQuery.status}
+        entering={FadeIn.duration(200)}
+        style={styles.fill}
+      >
+        {albumsQuery.isPending ? (
+          <AlbumsSkeleton />
+        ) : albumsQuery.isError ? (
+          <ErrorState
+            message={albumsQuery.error.message}
+            correlationId={albumsQuery.error.correlationId}
+            onRetry={() => {
+              void albumsQuery.refetch();
+            }}
+          />
+        ) : albumsQuery.data.length === 0 ? (
+          <EmptyState
+            icon="image-multiple-outline"
+            title="No albums yet"
+            message="Albums will show up here once there are some to browse."
+          />
+        ) : (
+          <FlashList
+            data={albumsQuery.data}
+            renderItem={renderItem}
+            keyExtractor={(item) => String(item.id)}
+            numColumns={2}
+            contentContainerStyle={styles.listContent}
+            onRefresh={() => {
+              hapticTap();
+              void albumsQuery.refetch();
+            }}
+            refreshing={albumsQuery.isRefetching}
+          />
+        )}
+      </Animated.View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  fill: {
+    flex: 1,
+  },
   listContent: {
     padding: 10,
   },

@@ -7,6 +7,8 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
+import { hapticTap } from '@/ui';
+
 import { PhotoImage } from './photo-image';
 
 const maxScale = 4;
@@ -43,6 +45,7 @@ export function ZoomablePhoto({ url, onZoomChange }: ZoomablePhotoProps) {
       const next = scale.value > 1 ? 1 : 2;
       scale.value = withSpring(next);
       savedScale.value = next;
+      runOnJS(hapticTap)();
       runOnJS(reportZoom)(next > 1);
     });
 
@@ -52,7 +55,11 @@ export function ZoomablePhoto({ url, onZoomChange }: ZoomablePhotoProps) {
 
   return (
     <GestureDetector gesture={Gesture.Race(doubleTap, pinch)}>
-      <Animated.View style={[styles.container, animatedStyle]}>
+      <Animated.View
+        style={[styles.container, animatedStyle]}
+        accessibilityLabel="Photo"
+        accessibilityHint="Double tap to zoom"
+      >
         <PhotoImage url={url} style={styles.tile} />
       </Animated.View>
     </GestureDetector>

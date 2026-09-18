@@ -2,8 +2,9 @@ import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { useRouter } from 'expo-router';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import type { components } from '@/api';
-import { EmptyState, ErrorState, Screen, Skeleton } from '@/ui';
+import { EmptyState, ErrorState, hapticTap, Screen, Skeleton } from '@/ui';
 
 import { PostCard } from './post-card';
 import { usePosts } from './use-posts';
@@ -58,39 +59,49 @@ export function PostsScreen() {
 
   return (
     <Screen padded={!hasPosts}>
-      {postsQuery.isPending ? (
-        <PostsSkeleton />
-      ) : postsQuery.isError ? (
-        <ErrorState
-          message={postsQuery.error.message}
-          correlationId={postsQuery.error.correlationId}
-          onRetry={() => {
-            void postsQuery.refetch();
-          }}
-        />
-      ) : postsQuery.data.length === 0 ? (
-        <EmptyState
-          icon="post-outline"
-          title="No posts yet"
-          message="Posts will show up here once there are some to read."
-        />
-      ) : (
-        <FlashList
-          data={postsQuery.data}
-          renderItem={renderItem}
-          keyExtractor={(item) => String(item.id)}
-          contentContainerStyle={styles.listContent}
-          onRefresh={() => {
-            void postsQuery.refetch();
-          }}
-          refreshing={postsQuery.isRefetching}
-        />
-      )}
+      <Animated.View
+        key={postsQuery.status}
+        entering={FadeIn.duration(200)}
+        style={styles.fill}
+      >
+        {postsQuery.isPending ? (
+          <PostsSkeleton />
+        ) : postsQuery.isError ? (
+          <ErrorState
+            message={postsQuery.error.message}
+            correlationId={postsQuery.error.correlationId}
+            onRetry={() => {
+              void postsQuery.refetch();
+            }}
+          />
+        ) : postsQuery.data.length === 0 ? (
+          <EmptyState
+            icon="post-outline"
+            title="No posts yet"
+            message="Posts will show up here once there are some to read."
+          />
+        ) : (
+          <FlashList
+            data={postsQuery.data}
+            renderItem={renderItem}
+            keyExtractor={(item) => String(item.id)}
+            contentContainerStyle={styles.listContent}
+            onRefresh={() => {
+              hapticTap();
+              void postsQuery.refetch();
+            }}
+            refreshing={postsQuery.isRefetching}
+          />
+        )}
+      </Animated.View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  fill: {
+    flex: 1,
+  },
   listContent: {
     padding: 16,
   },

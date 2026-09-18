@@ -207,11 +207,15 @@ Learn: FlashList, image caching, Reanimated and Gesture Handler.
 
 ### Phase 6: Polish
 
-- [ ] Screen transitions and list item animations
-- [ ] Haptics on key interactions
-- [ ] Offline banner (`@react-native-community/netinfo`)
-- [ ] App icon and splash screen
-- [ ] Accessibility pass with TalkBack
+- [x] Screen transitions and list item animations
+- [x] Haptics on key interactions
+- [x] Offline banner (`@react-native-community/netinfo`)
+- [ ] App icon and splash screen (blocked: no image-editing tool available to
+      produce real artwork; the default Expo icon/splash are still in place)
+- [ ] Accessibility pass with TalkBack (labels, roles and live regions done at
+      the code level, per `docs/README-ui.md`; an actual TalkBack run still
+      needs an emulator, blocked on the same Android Studio dependency as
+      Phase 0 and Phase 5)
 
 Learn: what separates "works" from "feels good".
 
