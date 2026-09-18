@@ -82,8 +82,9 @@ src/api/schema.d.ts         generated from the snapshot; never edited by hand
   People    directory with search
             → profile: contact, company
               segmented: Posts | Albums | Todos
-  Albums    grid of albums (cover tile, photo count)
-            → photo grid → full-screen viewer (swipe, pinch to zoom)
+  Albums    grid of albums (colour tile, title)
+            → photo grid (colour tiles, count in the header)
+              → full-screen viewer (swipe, pinch to zoom)
   Settings  theme (system, light, dark), API URL, app version
 ```
 
@@ -191,9 +192,16 @@ Learn: reusing the pattern, nested routes, prefetching.
 
 ### Phase 5: Albums and photos
 
-- [ ] Album grid and photo grid with colour-tile fallbacks
-- [ ] Full-screen viewer: swipe between photos, pinch to zoom
-- [ ] List performance check on a low-end emulator profile
+- [x] Album grid and photo grid with colour-tile fallbacks
+- [x] Full-screen viewer: swipe between photos, pinch to zoom
+- [ ] List performance check on a low-end emulator profile (needs Android
+      Studio, per Phase 0)
+- [x] Decided against a real cover photo or a live photo count on the album
+      grid: either would mean one nested `/albums/:id/photos` fetch per album
+      (~100 of them) or fetching all 5,000 `/photos` up front, against the
+      contract's "lists aren't paginated, prefer nested routes" guidance. The
+      grid shows a colour hashed from the album's id instead; the count shows
+      on the photo grid's header, which already has the exact list fetched
 
 Learn: FlashList, image caching, Reanimated and Gesture Handler.
 

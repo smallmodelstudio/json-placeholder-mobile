@@ -27,6 +27,7 @@ export const queryKeys = {
   albums: {
     all: ['albums'] as const,
     list: () => [...queryKeys.albums.all, 'list'] as const,
+    detail: (id: number) => [...queryKeys.albums.all, 'detail', id] as const,
     photos: (albumId: number) =>
       [...queryKeys.albums.all, 'detail', albumId, 'photos'] as const,
   },

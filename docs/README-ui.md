@@ -28,7 +28,12 @@ has a storage dependency for something else.
 
 The root layout (`src/app/_layout.tsx`) loads the fonts with `expo-font`,
 keeping the splash screen up until they're ready, then wraps the app in
-`ThemeModeProvider` → Paper's `PaperProvider` → `expo-router`'s `ThemeProvider`.
+`GestureHandlerRootView` → `ThemeModeProvider` → Paper's `PaperProvider` →
+`expo-router`'s `ThemeProvider`. `GestureHandlerRootView` isn't needed by
+anything in Phases 0–4; it's there for the photo viewer's pinch-to-zoom
+(`react-native-gesture-handler`'s `GestureDetector` needs it as an ancestor to
+work reliably, especially on Android), and wrapping the whole app is simpler
+and safer than scoping it to one screen.
 
 ## Navigation
 
@@ -45,28 +50,35 @@ src/app/
     [id].tsx          Post detail, pushed on top of the tabs
   person/
     [id].tsx          Person profile, pushed on top of the tabs
+  album/
+    [id].tsx          Album's photo grid, pushed on top of the tabs
+    [id]/
+      [photoId].tsx   Full-screen photo viewer, pushed on top of the photo grid
 ```
 
 Each route file re-exports its screen from `src/features/<feature>/`, per the
 routing rule in `docs/README-plan.md`. Tab icons come from
 `@expo/vector-icons`'s `MaterialCommunityIcons`, matching Paper's Material
 look. `docs/README-architecture.md` covers how a dynamic route like
-`post/[id].tsx` stays this thin.
+`post/[id].tsx` stays this thin, and how `album/[id]/[photoId].tsx` coexists
+with `album/[id].tsx` as a route file and a route directory sharing the same
+dynamic segment name.
 
-Albums is still a placeholder (an `EmptyState` saying what's coming) until
-Phase 5 adds its data. Posts, People and Settings are fully built: Posts lists
-posts from the API with a detail screen, and People a searchable directory
-with a profile screen, both per `docs/README-architecture.md`; Settings shows
-the theme picker, the configured API URL and the app version.
+Posts, People, Albums and Settings are all fully built: Posts lists posts from
+the API with a detail screen, People a searchable directory with a profile
+screen, and Albums a grid of albums with a per-album photo grid and full-screen
+viewer, all per `docs/README-architecture.md`; Settings shows the theme
+picker, the configured API URL and the app version.
 
 ## Shared components (`src/ui/`)
 
-| Component    | Purpose                                                                                                                                                      |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `Screen`     | Safe-area wrapper with the theme's background colour; `padded` and `edges` are configurable so a future edge-to-edge list can opt out of the default padding |
-| `EmptyState` | Icon, title and optional message for a list with nothing in it                                                                                               |
-| `ErrorState` | Icon, message, optional retry button and optional correlation ID (`Ref: …`), for the failure state the API contract calls for                                |
-| `Skeleton`   | A pulsing placeholder block (via Reanimated) for the loading state; hidden from screen readers                                                               |
+| Component    | Purpose                                                                                                                                                        |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Screen`     | Safe-area wrapper with the theme's background colour; `padded` and `edges` are configurable so a future edge-to-edge list can opt out of the default padding   |
+| `EmptyState` | Icon, title and optional message for a list with nothing in it                                                                                                 |
+| `ErrorState` | Icon, message, optional retry button and optional correlation ID (`Ref: …`), for the failure state the API contract calls for                                  |
+| `Skeleton`   | A pulsing placeholder block (via Reanimated) for the loading state; hidden from screen readers                                                                 |
+| `ColourTile` | A solid-colour tile, falling back to the theme's surface colour when no colour is given — see `docs/README-architecture.md`'s "Colour tiles instead of images" |
 
 These cover the loading, empty and error states every screen needs per
 `docs/README-plan.md`; the success state is each feature's own content.

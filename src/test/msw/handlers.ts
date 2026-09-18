@@ -101,6 +101,15 @@ export const handlers = [
     HttpResponse.json({ data: albums, meta: meta(request) }),
   ),
 
+  http.get(`${baseUrl}/albums/:id`, ({ request, params }) => {
+    const album = albums.find((candidate) => candidate.id === idParam(params));
+    const url = new URL(request.url);
+    if (!album) {
+      return notFound(request, url);
+    }
+    return HttpResponse.json({ data: album, meta: meta(request) });
+  }),
+
   http.get(`${baseUrl}/albums/:id/photos`, ({ request, params }) => {
     const albumId = idParam(params);
     return HttpResponse.json({

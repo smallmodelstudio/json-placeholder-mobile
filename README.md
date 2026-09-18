@@ -14,8 +14,9 @@ TanStack Query · openapi-fetch · Jest + React Native Testing Library · MSW
 
 ## Status
 
-Phase 3 (Posts) is done. See the [build plan](docs/README-plan.md) for what
-comes next.
+Phase 5 (Albums and photos) is done, aside from a list performance check on a
+low-end emulator profile (needs Android Studio, per Phase 0). See the
+[build plan](docs/README-plan.md) for what comes next.
 
 ## Quick start
 

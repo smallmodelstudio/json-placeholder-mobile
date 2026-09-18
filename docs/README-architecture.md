@@ -3,7 +3,10 @@
 The feature pattern Posts establishes in Phase 3, for People and Albums to
 copy in Phases 4 and 5. People (Phase 4) copies it as-is for its directory and
 profile screens, and adds three patterns of its own: client-side search,
-prefetch-on-press and lazily-enabled segments, all covered below.
+prefetch-on-press and lazily-enabled segments, all covered below. Albums
+(Phase 5) copies it too for its grid and photo-grid screens, and adds colour
+tiles in place of real images, plus a gesture-driven full-screen viewer,
+covered in "Colour tiles instead of images" and "The photo viewer" below.
 
 ## A feature's files
 
@@ -78,7 +81,62 @@ resolved by the time `PersonProfileScreen` mounts and calls `usePerson` with
 the same options. `useQueryClient()` (not the `queryClient` singleton
 imported from `@/api`) is what a screen uses to do this — it resolves to
 whichever `QueryClient` is in context, so prefetching works the same way in
-tests as it does in the app.
+tests as it does in the app. `AlbumsScreen` does the same with
+`albumQueryOptions` on row press, ahead of the photo grid.
+
+A photo, on the other hand, needs no explicit prefetch to open instantly:
+`useAlbumPhotos` (`src/features/albums/use-album-photos.ts`) exposes
+`albumPhotosQueryOptions(albumId)`, and both `AlbumPhotosScreen` (the grid)
+and `PhotoViewerScreen` (opened from a tile in that grid) call it with the
+same `albumId`, so they read the same cache entry under
+`queryKeys.albums.photos(albumId)`. The viewer can only be reached by tapping
+a tile the grid already rendered, so its query is always a cache hit — no
+`prefetchQuery` call needed.
+
+## Colour tiles instead of images
+
+The API contract notes that a `Photo`'s `url` and `thumbnailUrl` point at
+`via.placeholder.com`, which no longer serves images. `ColourTile`
+(`src/ui/colour-tile.tsx`) renders a solid tile from a hex colour instead of
+loading anything, and `hexFromPlaceholderUrl` (same file) extracts that
+colour from a photo URL's last path segment.
+
+`PhotoImage` (`src/features/albums/photo-image.tsx`) still attempts the real
+`expo-image` load on top of a `ColourTile`, hiding itself on `onError`: every
+load fails today, so the colour tile is what actually renders, but a real
+photo would start appearing again for free if the upstream host ever came
+back, with no code change. `PhotoTile` (the photo grid) and `ZoomablePhoto`
+(the viewer) both build on `PhotoImage`.
+
+The album grid has no per-photo URL to draw a colour from — showing a real
+cover photo would mean either one nested `/albums/:id/photos` call per album
+(~100 of them) or fetching all 5,000 `/photos` up front, against the
+contract's "lists aren't paginated, prefer nested routes" guidance. `AlbumCard`
+hashes the album's `id` against a fixed palette instead, so the grid still
+gets a distinct colour per album with no extra fetch. The photo count that
+would normally sit on a cover tile shows on `AlbumPhotosScreen`'s header
+instead (`"<title> · <count> photos"`), since that screen already has the
+exact photo list fetched for its own grid.
+
+## The photo viewer
+
+`PhotoViewerScreen` pages horizontally through an album's photos with
+`FlashList`'s own `horizontal` and `pagingEnabled` props (it extends
+`ScrollViewProps`, so both pass straight through), rather than a dedicated
+pager library — consistent with using `FlashList` for every list per
+"Lists" below. `initialScrollIndex` starts it on the tapped photo, and
+`onMomentumScrollEnd` recomputes the current index from the scroll offset,
+for the "`n` of `total`" header title.
+
+Pinch-to-zoom is `ZoomablePhoto`'s own concern, not the list's: a
+`react-native-gesture-handler` `Gesture.Pinch()` drives a Reanimated `scale`
+shared value between 1x and 4x, and a double-tap toggles between 1x and 2x.
+Zooming reports back to the screen through an `onZoomChange` callback, which
+the screen uses to set the list's `scrollEnabled` to `false` while zoomed —
+otherwise a pinch's incidental single-finger drift could also page the list.
+`GestureDetector` needs a `GestureHandlerRootView` ancestor to work reliably
+(especially on Android), so the root layout (`src/app/_layout.tsx`) wraps the
+whole app in one.
 
 ## Client-side search
 
@@ -142,6 +200,12 @@ router-backed screens:
   accessibility tree (`accessibilityElementsHidden`), so there's no accessible
   text or role to query them by — the one sanctioned exception to
   `docs/README-testing.md`'s "query like a user" rule.
+- **Photo tiles and pages get a `testID` too**, for the same reason: a colour
+  tile has no accessible text to query by. `PhotoViewerScreen`'s tests cover
+  data loading and which photo starts selected, not the pinch/pan/double-tap
+  gestures themselves — `react-native-gesture-handler`'s `Gesture` builders
+  aren't something RNTL's `fireEvent` can drive, so `ZoomablePhoto` has no
+  dedicated test of its own.
 - **`expo-router` is mocked per-hook, not with a router harness.**
   `useRouter()` returns the same imperative `router` singleton whether or not
   a navigator is mounted, so a list screen's navigation is asserted with
